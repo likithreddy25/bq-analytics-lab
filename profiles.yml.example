@@ -1,0 +1,13 @@
+# Copy to ~/.dbt/profiles.yml. Auth uses your own local gcloud login
+# (`gcloud auth application-default login`) -- no key files, nothing secret here.
+bq_analytics_lab:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: bq-analytics-lab
+      dataset: analytics_dev
+      location: US          # thelook_ecommerce lives in the US multi-region
+      threads: 4
+      job_execution_timeout_seconds: 300

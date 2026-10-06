@@ -1,0 +1,60 @@
+version: 2
+
+models:
+  - name: fct_order_items
+    description: One row per order item. net_revenue excludes cancelled and returned items.
+    columns:
+      - name: order_item_id
+        tests: [unique, not_null]
+      - name: user_id
+        tests:
+          - not_null
+          - relationships: {to: ref('stg_users'), field: user_id}
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['Complete', 'Shipped', 'Processing', 'Cancelled', 'Returned']
+      - name: gross_amount
+        tests: [non_negative]
+      - name: net_revenue
+        tests: [non_negative]
+
+  - name: dim_customers
+    description: One row per customer with lifetime value, engagement, and health segment.
+    columns:
+      - name: user_id
+        tests: [unique, not_null]
+      - name: lifetime_net_revenue
+        tests: [non_negative]
+      - name: health_segment
+        description: >
+          never_purchased, active (<=90d since last order), cooling (<=180d),
+          at_risk (<=365d), churned (>365d). Thresholds are dbt vars.
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['never_purchased', 'active', 'cooling', 'at_risk', 'churned']
+
+  - name: fct_monthly_revenue
+    description: Monthly revenue, orders, and new vs returning customers.
+    columns:
+      - name: order_month
+        tests: [unique, not_null]
+      - name: net_revenue
+        tests: [non_negative]
+
+  - name: fct_cohort_retention
+    description: Cohort retention by months since first order.
+    columns:
+      - name: retention_rate
+        tests: [not_null]
+
+exposures:
+  - name: customer_health_dashboard
+    type: dashboard
+    maturity: low
+    description: Intended consumer of dim_customers and fct_monthly_revenue (not built yet).
+    owner: {name: Likhith Reddy Dosakayala}
+    depends_on:
+      - ref('dim_customers')
+      - ref('fct_monthly_revenue')

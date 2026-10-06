@@ -1,0 +1,27 @@
+name: bq_analytics_lab
+version: "1.0.0"
+config-version: 2
+profile: bq_analytics_lab
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+vars:
+  # Pin for reproducible results; leave unset to use today's date.
+  # Example: dbt build --vars '{as_of_date: "2025-01-01"}'
+  as_of_date: null
+  health_active_days: 90
+  health_cooling_days: 180
+  health_at_risk_days: 365
+
+models:
+  bq_analytics_lab:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: view
+    marts:
+      +materialized: table

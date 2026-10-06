@@ -1,0 +1,20 @@
+name: dbt-parse
+on: [push, pull_request]
+jobs:
+  parse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install "dbt-bigquery~=1.9.0" sqlglot pytest
+      - run: pytest tests_py -q
+      - name: dbt parse with dummy profile
+        run: |
+          mkdir -p /tmp/p && cat > /tmp/p/profiles.yml <<'P'
+          bq_analytics_lab:
+            target: dev
+            outputs:
+              dev: {type: bigquery, method: oauth, project: dummy, dataset: dummy, location: US, threads: 1}
+          P
+          dbt parse --profiles-dir /tmp/p
