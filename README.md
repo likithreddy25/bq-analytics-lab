@@ -6,6 +6,8 @@ A dbt + BigQuery analytics-engineering project: staging -> intermediate -> marts
 > **Data disclosure:** the source data is a *synthetic* public e-commerce dataset published by Google.
 > Nothing here is real business data.
 
+**Live dashboard (synthetic data):** [https://datastudio.google.com/reporting/187db68f-c14f-4415-a87c-e16c36b2b6fe](https://datastudio.google.com/reporting/187db68f-c14f-4415-a87c-e16c36b2b6fe)
+
 ## Layout
 
 | Layer | Models | Materialization |
